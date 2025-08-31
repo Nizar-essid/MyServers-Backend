@@ -34,7 +34,7 @@ private final AuthenticationProvider authenticationProvider;
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("api/v1/auth/**","api/v1/files/**" ).permitAll()
                         .requestMatchers("api/v1/applications/icons/**").permitAll()
-                        .requestMatchers("api/v1/applications/active").permitAll()
+                        .requestMatchers("api/v1/applications/active").hasAnyAuthority("ADMIN","USER")
                         .requestMatchers("api/v1/applications/upload-icon").hasAuthority("ADMIN")
                         .requestMatchers("api/v1/applications/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("api/v1/applications/**").hasAuthority("ADMIN")

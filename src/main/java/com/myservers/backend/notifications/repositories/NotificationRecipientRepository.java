@@ -26,7 +26,7 @@ public interface NotificationRecipientRepository extends JpaRepository<Notificat
     @Query("SELECT COUNT(nr) FROM NotificationRecipient nr WHERE nr.user.id = :userId AND nr.isRead = false")
     long countUnreadByUserId(@Param("userId") Integer userId);
 
-    @Query("SELECT nr FROM NotificationRecipient nr WHERE nr.user.id = :userId AND nr.notification.displayType = :displayType ORDER BY nr.receivedAt DESC")
+    @Query("SELECT nr FROM NotificationRecipient nr WHERE nr.user.id = :userId AND nr.notification.displayType = :displayType AND nr.notification.expiresAt > CURRENT_TIMESTAMP ORDER BY nr.receivedAt DESC")
     List<NotificationRecipient> findByUserIdAndDisplayType(@Param("userId") Integer userId, @Param("displayType") com.myservers.backend.notifications.enums.NotificationDisplayType displayType);
 
     @Modifying

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -50,11 +51,21 @@ public class StatisticsService {
                     .status(200)
                     .build();
         } else if (period.equals("year")) {
-            List<String> labels = List.of("2024", "2025");
-            List<Integer> userData = userService.getUsersCountPerYear(2024,2025);
-            List<Double> purchaseData = getCombinedPurchasesByYear(2024,2025);
-            List<Integer> serverData = codesService.getcodesCountPerYear(2024,2025);
-            List<Double> balanceData = userService.getBalanceChangesByYear(2024,2025);
+            // Get current year and previous 2 years for better historical view
+            int currentYear = LocalDate.now().getYear();
+            int startYear = currentYear - 2; // Show last 3 years
+            int endYear = currentYear;
+
+            List<String> labels = new ArrayList<>();
+            for (int year = startYear; year <= endYear; year++) {
+                labels.add(String.valueOf(year));
+            }
+
+            List<Integer> userData = userService.getUsersCountPerYear(startYear, endYear);
+            List<Double> purchaseData = getCombinedPurchasesByYear(startYear, endYear);
+            List<Integer> serverData = codesService.getcodesCountPerYear(startYear, endYear);
+            List<Double> balanceData = userService.getBalanceChangesByYear(startYear, endYear);
+
             return GetStatisticsResponse.builder()
                     .data(
                             Statistics.builder()
