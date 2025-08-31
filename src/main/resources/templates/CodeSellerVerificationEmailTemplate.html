@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="" xmlns:th="http://www.thymeleaf.org">
+<head><title th:text="${subject}"></title>
+    <meta charset="utf-8"/>
+</head>
+<body style="font: small/ 1.5 Arial,Helvetica,sans-serif;">
+<div bgcolor="#f6f7f9" style="max-width:602px;margin:0 auto;background:#f6f7f9;padding:20px;box-sizing: border-box;">
+    <div style="width:100%;height:30px;display:flex;margin-bottom: 30px;">
+        <div style="display:flex;align-items: center;height:100%;margin-left:10px;font-size:20px;font-weight: bold;"
+             th:text="${subject}"></div>
+    </div>
+    <div style="width:100%;background:white;box-sizing: border-box;padding:30px;">
+        <b><p th:text="${greetings}+' '+${name}+','"></p>
+        </b><br><br>
+        <p th:text="'Vous venez d\'acheter un nouveau code d\'activation '+${server_name}+' de durée '+${duration}+' renouvenable.'"></p>
+        <p>Pour valider votre achat Merci de visiter le lien ci-dessout:</p>
+        <a style=" font-weight:bold" th:href="${lien_activation}+${verification_code}"> Lien d'activation</a>
+        <p>NB: Le lien d'activation Expirera bientôt </p>
+        <p>Nous vous remercions pour votre confiance. </p></div>
+    <br>
+</div>
+</body>
+</html>
+
+
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="">-->
+<!--<head>-->
+<!--    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
+<!--    <title th:text="${subject}"></title>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: Helvetica, Arial, sans-serif;-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            background-color: #f2f2f2;-->
+<!--        }-->
+<!--        .container {-->
+<!--            font-size: 16px;-->
+<!--            width: 70%;-->
+<!--            margin: 50px auto;-->
+<!--            padding: 20px;-->
+<!--            background-color: #fff;-->
+<!--            border-radius: 8px;-->
+<!--            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);-->
+<!--        }-->
+<!--        .header {-->
+<!--            border-bottom: 1px solid #eee;-->
+<!--            padding-bottom: 20px;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+<!--        .brand {-->
+<!--            font-size: 1.5em;-->
+<!--            color: green !important;-->
+<!--            text-decoration: none;-->
+<!--            font-weight: 800;-->
+<!--        }-->
+<!--        p {-->
+<!--            margin-bottom: 15px;-->
+<!--        }-->
+<!--        .footer {-->
+<!--            color: #aaa;-->
+<!--            font-size: 0.8em;-->
+<!--            font-weight: 300;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <div class="header">-->
+<!--        <a href="#" class="brand">IPServers</a>-->
+<!--    </div>-->
+<!--    <h3>Hello, <span th:text="${name}"></span>!</h3>-->
+<!--    <a th:href="${verificationCode}" th:text="${verificationCode}" ></a>-->
+<!--    <br><br>-->
+<!--    <div class="footer">-->
+<!--        <p>Thank You</p>-->
+<!--        <p>GFG Team.</p>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<!--</body>-->
+<!--</html>-->

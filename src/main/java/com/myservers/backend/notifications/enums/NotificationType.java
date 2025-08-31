@@ -1,0 +1,14 @@
+package com.myservers.backend.notifications.enums;
+
+public enum NotificationType {
+    SERVER_CREATED,
+    SERVER_UPDATED,
+    APPLICATION_ADDED,
+    APPLICATION_UPDATED,
+    REQUEST_APPROVED,
+    REQUEST_REJECTED,
+    BALANCE_INCREASED,
+    MANUAL_NOTIFICATION,
+    CODE_PURCHASED,
+    SYSTEM_ANNOUNCEMENT
+} 
