@@ -183,6 +183,77 @@ public class OnDemandRequestService {
     }
 
     /**
+     * Annuler une demande on-demand par l'utilisateur
+     */
+    @Transactional
+    public GeneralResponse cancelOnDemandRequest(Long requestId, String cancellationReason, User user) {
+        try {
+            Optional<OnDemandRequest> requestOpt = onDemandRequestRepository.findById(requestId);
+            if (requestOpt.isEmpty()) {
+                return GeneralResponse.builder()
+                        .status(404L)
+                        .result("Request not found")
+                        .trueFalse(false)
+                        .build();
+            }
+
+            OnDemandRequest request = requestOpt.get();
+
+            // Vérifier que la demande appartient à l'utilisateur
+            if (!request.getUser().getId().equals(user.getId())) {
+                return GeneralResponse.builder()
+                        .status(403L)
+                        .result("You can only cancel your own requests")
+                        .trueFalse(false)
+                        .build();
+            }
+
+            // Vérifier que la demande est en attente
+            if (request.getStatus() != RequestStatus.PENDING) {
+                return GeneralResponse.builder()
+                        .status(400L)
+                        .result("Only pending requests can be cancelled")
+                        .trueFalse(false)
+                        .build();
+            }
+
+            // Vérifier que la raison d'annulation est fournie
+            if (cancellationReason == null || cancellationReason.trim().isEmpty()) {
+                return GeneralResponse.builder()
+                        .status(400L)
+                        .result("Cancellation reason is required")
+                        .trueFalse(false)
+                        .build();
+            }
+
+            // Rembourser l'utilisateur
+            Float refundAmount = request.getPriceAfterDiscount() != null ?
+                request.getPriceAfterDiscount() : request.getPrice();
+            user.setBalance(user.getBalance() + refundAmount);
+            userRepository.save(user);
+
+            // Mettre à jour la demande
+            request.setStatus(RequestStatus.CANCELLED);
+            request.setAdminNotes("Cancelled by user: " + cancellationReason);
+            request.setProcessedDate(new Date());
+            onDemandRequestRepository.save(request);
+
+            return GeneralResponse.builder()
+                    .status(200L)
+                    .result("Request cancelled successfully. Amount refunded: " + refundAmount + " DT")
+                    .trueFalse(true)
+                    .build();
+
+        } catch (Exception e) {
+            return GeneralResponse.builder()
+                    .status(500L)
+                    .result("Error cancelling request: " + e.getMessage())
+                    .trueFalse(false)
+                    .build();
+        }
+    }
+
+    /**
      * Obtenir toutes les demandes d'un utilisateur
      */
     public List<OnDemandRequestResponse> getUserRequests(Long userId) {

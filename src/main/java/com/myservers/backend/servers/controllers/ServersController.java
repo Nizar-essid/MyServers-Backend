@@ -585,4 +585,45 @@ if(user.getBalance()<payable)
                     .build();
         }
     }
+
+    @CrossOrigin(origins = "*", exposedHeaders = "**")
+    @PostMapping("/cancel_on_demand_request")
+    public GeneralResponse cancelOnDemandRequest(@RequestBody Map<String, Object> requestBody) {
+        try {
+            Long requestId = Long.valueOf(requestBody.get("requestId").toString());
+            String cancellationReason = (String) requestBody.get("cancellationReason");
+
+            User user = authService.getUser();
+
+            GeneralResponse response = onDemandRequestService.cancelOnDemandRequest(requestId, cancellationReason, user);
+
+            // Notify admins about cancelled on-demand request
+            if (response != null && (response.getStatus() == 200L || response.getStatus() == 200)) {
+                List<Integer> adminIds = new ArrayList<>();
+                userRepository.findByRoleAndState(Role.ADMIN, true).forEach(admin -> adminIds.add(admin.getId()));
+                String title = "Demande à la demande annulée";
+                String content = String.format("L'utilisateur %s a annulé sa demande #%d.", user.getEmail(), requestId);
+                String link = "/admin/on-demand-requests";
+                notificationService.createAutomaticNotification(
+                        title,
+                        content,
+                        NotificationType.SYSTEM_ANNOUNCEMENT,
+                        link,
+                        NotificationDisplayType.DROPDOWN_NOTIFICATION,
+                        NotificationTargetType.SPECIFIC_USERS,
+                        adminIds,
+                        null
+                );
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            return GeneralResponse.builder()
+                    .status(500L)
+                    .result("Error cancelling on-demand request: " + e.getMessage())
+                    .trueFalse(false)
+                    .build();
+        }
+    }
 }
