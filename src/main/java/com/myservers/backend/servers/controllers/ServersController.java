@@ -401,9 +401,13 @@ if(user.getBalance()<payable)
             subscriptions.forEach(s -> {
                 CodeType codetype = null;
                 try {
+                    Float finalPrice = s.getPriceAfterDiscount() != null ? s.getPriceAfterDiscount().floatValue() : s.getRelatedCode().getPrice();
+                    Float originalPrice = s.getRelatedCode().getPrice();
+
                     codetype = CodeType.builder()
                             .code_value(verificationCodeService.generateTokenForCodeValue(generateTwoDigitNumber() + s.getRelatedCode().getCode_value()+ generateTwoDigitNumber()))
-                            .price(s.getPriceAfterDiscount() != null ? s.getPriceAfterDiscount().floatValue() : s.getRelatedCode().getPrice())
+                            .price(finalPrice)
+                            .originalPrice(originalPrice)
                             .checksum(s.getRelatedCode().getCode_value())
                             .duration(s.getRelatedCode().getSubscriptionDuration())
                             .dateOfPurchase(s.getDateLatestUpdate())
