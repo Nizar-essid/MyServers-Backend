@@ -15,6 +15,7 @@ public class CodeType {
     private Integer duration;
     private Float price;
     private Float originalPrice;
+    private Float discountPercentage;
     private String server_name;
    AllServersResponse server;
     private String code_value;

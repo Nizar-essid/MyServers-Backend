@@ -146,6 +146,7 @@ public class ServersController {
 
         // Compute discount server-side as MAX among: default group discount and per-server discounts
         Double priceAfterDiscountComputed = null;
+        Double discountPercentageComputed = null;
         try {
             double base = code.getPrice() != null ? code.getPrice().doubleValue() : (price != null ? price.doubleValue() : 0.0);
             double maxDiscount = 0.0;
@@ -160,6 +161,7 @@ public class ServersController {
             }
             if (maxDiscount > 0) {
                 priceAfterDiscountComputed = Math.round(base * (1 - maxDiscount / 100.0) * 100.0) / 100.0;
+                discountPercentageComputed = maxDiscount;
             }
         } catch (Exception e) {
             // Ignore discount computation errors, proceed without discount
@@ -173,6 +175,7 @@ public class ServersController {
                 .purchaser(user)
                 .verificationCode(verifCodeService.generateToken(code.getId()))
                 .priceAfterDiscount(priceAfterDiscountComputed)
+                .discountPercentage(discountPercentageComputed)
                 .build();
         subscriptionRepository.save(s);
         code.setState(CodeState.REQUESTED);
@@ -403,11 +406,13 @@ if(user.getBalance()<payable)
                 try {
                     Float finalPrice = s.getPriceAfterDiscount() != null ? s.getPriceAfterDiscount().floatValue() : s.getRelatedCode().getPrice();
                     Float originalPrice = s.getRelatedCode().getPrice();
+                    Float discountPercentage = s.getDiscountPercentage() != null ? s.getDiscountPercentage().floatValue() : null;
 
                     codetype = CodeType.builder()
                             .code_value(verificationCodeService.generateTokenForCodeValue(generateTwoDigitNumber() + s.getRelatedCode().getCode_value()+ generateTwoDigitNumber()))
                             .price(finalPrice)
                             .originalPrice(originalPrice)
+                            .discountPercentage(discountPercentage)
                             .checksum(s.getRelatedCode().getCode_value())
                             .duration(s.getRelatedCode().getSubscriptionDuration())
                             .dateOfPurchase(s.getDateLatestUpdate())

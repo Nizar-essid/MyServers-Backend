@@ -41,4 +41,8 @@ public class Subscription {
     // New field: price after discount (nullable if no discount)
     @Column(name = "price_after_discount")
     private Double priceAfterDiscount;
+
+    // New field: discount percentage applied (nullable if no discount)
+    @Column(name = "discount_percentage")
+    private Double discountPercentage;
 }
