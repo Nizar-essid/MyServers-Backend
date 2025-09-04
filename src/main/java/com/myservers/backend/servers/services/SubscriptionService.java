@@ -61,14 +61,36 @@ public class SubscriptionService {
     }
 
     public boolean isSubscriptionValid(String verificationCode, Long id_user) {
-        var subscription = subscriptionRepository.findByVerificationCodeAndPurchaser_IdAndState(verificationCode, Math.toIntExact(id_user), SubscrptionState.INPROCESS)
-                .orElseThrow(() -> new ApiRequestException("invalid Subscription", HttpStatus.NOT_ACCEPTABLE));
-        return subscription.getIdSubscription() >= 0 && subscription.getState().equals(SubscrptionState.INPROCESS);
+        // First try to find subscription in INPROCESS state
+        var subscription = subscriptionRepository.findByVerificationCodeAndPurchaser_IdAndState(verificationCode, Math.toIntExact(id_user), SubscrptionState.INPROCESS);
+
+        if (subscription.isPresent()) {
+            return subscription.get().getIdSubscription() >= 0 && subscription.get().getState().equals(SubscrptionState.INPROCESS);
+        }
+
+        // If not found in INPROCESS, check if it exists in COMPLETED state
+        var completedSubscription = subscriptionRepository.findByVerificationCodeAndPurchaser_IdAndState(verificationCode, Math.toIntExact(id_user), SubscrptionState.COMPLETED);
+
+        if (completedSubscription.isPresent()) {
+            // Return false to indicate the code is already paid, but valid
+            return false;
+        }
+
+        // If not found in either state, throw exception
+        throw new ApiRequestException("invalid Subscription", HttpStatus.NOT_ACCEPTABLE);
     }
 
 
     public Optional<Subscription> getSubscription(String verificationCode, Long id_user) {
-        return subscriptionRepository.findByVerificationCodeAndPurchaser_IdAndState(verificationCode, Math.toIntExact(id_user), SubscrptionState.INPROCESS);
+        // First try to find subscription in INPROCESS state
+        var subscription = subscriptionRepository.findByVerificationCodeAndPurchaser_IdAndState(verificationCode, Math.toIntExact(id_user), SubscrptionState.INPROCESS);
+
+        if (subscription.isPresent()) {
+            return subscription;
+        }
+
+        // If not found in INPROCESS, check if it exists in COMPLETED state
+        return subscriptionRepository.findByVerificationCodeAndPurchaser_IdAndState(verificationCode, Math.toIntExact(id_user), SubscrptionState.COMPLETED);
     }
 
     public List<Subscription> findByPurchaser_IdAndState(Integer id) {
@@ -526,9 +548,9 @@ private Map<YearMonth, Double> ensureMonthsDouble(Map<YearMonth, Double> objects
 
         if (subscription.getState() == SubscrptionState.COMPLETED) {
           return  GeneralResponse.builder()
-            .status(404L)
+            .status(200L)
             .trueFalse(false)
-            .result("Completed subscriptions cannot be canceled")
+            .result("Subscription is already completed")
             .build();
         }
 

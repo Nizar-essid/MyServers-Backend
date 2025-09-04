@@ -39,6 +39,7 @@ public class ApplicationController {
 
     @GetMapping("/active")
     public ResponseEntity<List<Application>> getActiveApplications() {
+      System.out.println("=== DEBUG: Active applications endpoint called ===============================================================================================================================================================================================================================");
         List<Application> activeApplications = applicationService.getActiveApplications();
         return ResponseEntity.ok(activeApplications);
     }

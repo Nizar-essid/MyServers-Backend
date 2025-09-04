@@ -140,7 +140,7 @@ public class CodesService {
 
     @Transactional
     public void payCode(User user,  Subscription s) {
-
+try{
         Code code = s.getRelatedCode();
         // Determine payable amount: use discounted price if available, otherwise original code price
         double codePrice = code.getPrice() != null ? code.getPrice().doubleValue() : 0.0;
@@ -154,13 +154,14 @@ public class CodesService {
         // Update user balance using the payable amount (cast to float for balance type)
         user.setBalance((float) (user.getBalance() - payable));
         userRepository.save(user);
-
+System.out.println("User with ID: " + user.getId() + " new balance: " + user.getBalance());
         // Mark product as purchased
         code.setState(CodeState.PURCHASED);
         codeRepository.save(code);
-
+System.out.println("Code with ID: " + code.getId() + " marked as PURCHASED");
         s.setState(SubscrptionState.COMPLETED);
-        subscriptionRepository.save(s);
+        subscriptionRepository.save(s);}
+catch (Exception e){System.out.println(e.getMessage());}
     }
 
     public GeneralResponse updateCode(CodeDetails codeDetails, User user) {

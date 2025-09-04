@@ -204,16 +204,34 @@ public class ServersController {
     @PostMapping("/verifyPurchaseValidity")
     public GeneralResponse verifyPurchaseValidity(@RequestBody Map<String, Object> requestBody) {
         try {
-            String verificationCode = (String) requestBody.get("verificationCode");
+          System.out.println("before Received verification code: ");
+
+          String verificationCode = (String) requestBody.get("verificationCode");
+            System.out.println("Received verification code: " + verificationCode);
             User user = authService.getUser();
             if (verificationCodeService.isTokenExpired(verificationCode)) {
+              System.out.println("Verification code expired: " );
                 return GeneralResponse.builder()
                         .result("Verification code expired")
                         .status(501L)
                         .trueFalse(false)
                         .build();
             }
-            if (!this.subscriptionService.isSubscriptionValid(verificationCode, Long.valueOf(user.getId()))) {
+            boolean isValid = this.subscriptionService.isSubscriptionValid(verificationCode, Long.valueOf(user.getId()));
+
+            // Check if subscription exists in COMPLETED state (already paid)
+            var completedSubscription = subscriptionService.getSubscription(verificationCode, Long.valueOf(user.getId()));
+            if (completedSubscription.isPresent() && completedSubscription.get().getState() == SubscrptionState.COMPLETED) {
+                System.out.println("Subscription is already completed for code: " + verificationCode);
+                return GeneralResponse.builder()
+                        .result("Ce code est déjà payé. Vous pouvez le retrouver dans la page des achats.")
+                        .trueFalse(false)
+                        .status(200L)
+                        .build();
+            }
+
+            if (!isValid) {
+                System.out.println("There is no valid subscription for code: " );
                 return GeneralResponse.builder()
                         .result("There is no valid subscription")
                         .trueFalse(false)
