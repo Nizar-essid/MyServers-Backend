@@ -36,7 +36,7 @@ return ResponseEntity.ok(service.register(request));
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(service.loginAdmin(request));
+        return ResponseEntity.ok(service.loginUser(request));
 
     }
     @PostMapping("/login_admin")
@@ -49,8 +49,11 @@ return ResponseEntity.ok(service.register(request));
     @PostMapping("/login_mfa")
     public ResponseEntity<AuthenticationResponse> loginWithMfa(@RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(service.loginAdminWith2FA(request));
-
     }
+  @PostMapping("/login_mfa_user")
+  public ResponseEntity<AuthenticationResponse> loginWithMfaUser(@RequestBody AuthenticationRequest request){
+    return ResponseEntity.ok(service.loginAdminWith2FAUser(request));
+  }
 
     @PostMapping("/verify_mfa")
     public ResponseEntity<?> verifyMfa(@RequestBody VerificationRequest request){

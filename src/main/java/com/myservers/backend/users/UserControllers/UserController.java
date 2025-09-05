@@ -74,6 +74,9 @@ public class UserController {
             //boolean mfaEnabled=(boolean) RequestBodey.get("mfaEnabled");
             String email = (String) RequestBodey.get("email");
             String password = (String) RequestBodey.get("password");
+            String firstname=(String) RequestBodey.get("firstname");
+            String lastname=(String) RequestBodey.get("lastname"); // Can be null or empty for random generation
+// Can be null or empty for random generation
             Integer telephone = null;
             if (RequestBodey.get("telephone") instanceof Integer) {
                 telephone = (Integer) RequestBodey.get("telephone");
@@ -91,7 +94,7 @@ public class UserController {
 
             //System.out.println("user added with success->"+userService.addUser(email,password,telephone,balance,role));
 
-            return userService.addUser(email,password,telephone,balance,role,false);
+            return userService.addUser(firstname,lastname,email,password,telephone,balance,role,false);
 
         } catch (Exception e) {
             System.out.println("erreur d'ajout");

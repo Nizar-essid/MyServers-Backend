@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${subject}"></title>
+    <meta charset="utf-8"/>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #F27438 0%, #e85d1c 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .welcome-message {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .credentials-box {
+            background: #f8f9fa;
+            border-left: 4px solid #F27438;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        .credential-item {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .credential-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .credential-label {
+            font-weight: bold;
+            color: #495057;
+            display: inline-block;
+            width: 120px;
+        }
+        .credential-value {
+            color: #007bff;
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .security-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .security-notice h4 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #F27438 0%, #e85d1c 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .highlight {
+            color: #F27438;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to E-SatStore!</h1>
+        </div>
+
+        <div class="content">
+            <div class="welcome-message">
+                <p th:text="${greetings} + ' ' + ${name} + ','"></p>
+                <p>Your account has been successfully created! We're excited to have you join our community.</p>
+            </div>
+
+            <div class="credentials-box">
+                <h3 style="margin-top: 0; color: #495057;">Your Account Credentials</h3>
+                <div class="credential-item">
+                    <span class="credential-label">Email:</span>
+                    <span class="credential-value" th:text="${email}"></span>
+                </div>
+                <div class="credential-item">
+                    <span class="credential-label">Password:</span>
+                    <span class="credential-value" th:text="${password}"></span>
+                </div>
+            </div>
+
+            <div class="security-notice">
+                <h4>🔒 Security Notice</h4>
+                <p>Please save these credentials in a secure location. For your security, we recommend changing your password after your first login.</p>
+            </div>
+
+            <p>You can now access your account and start exploring all the features we have prepared for you. If you have any questions or need assistance, our support team is here to help.</p>
+
+            <div style="text-align: center;">
+                <a th:href="${loginUrl}" class="cta-button">Login to Your Account</a>
+            </div>
+
+            <p>Thank you for choosing E-SatStore. We look forward to serving you!</p>
+
+            <p>Best regards,<br>
+            <strong>The E-SatStore Team</strong></p>
+        </div>
+
+        <div class="footer">
+            <p><strong>E-SatStore</strong> - Professional Server Management Platform</p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>If you didn't create this account, please contact our support team immediately.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -628,7 +628,7 @@ if(user.getBalance()<payable)
             if (response != null && (response.getStatus() == 200L || response.getStatus() == 200)) {
                 List<Integer> adminIds = new ArrayList<>();
                 userRepository.findByRoleAndState(Role.ADMIN, true).forEach(admin -> adminIds.add(admin.getId()));
-                String title = "Demande à la demande annulée";
+                String title = "Demande du serverur à la demande annulée";
                 String content = String.format("L'utilisateur %s a annulé sa demande #%d.", user.getEmail(), requestId);
                 String link = "/admin/on-demand-requests";
                 notificationService.createAutomaticNotification(

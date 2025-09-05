@@ -7,7 +7,9 @@ import com.myservers.backend.security.auth.tfa.TwoFactorAuthenticationService;
 import com.myservers.backend.servers.entities.Subscription;
 import com.myservers.backend.servers.entities.SubscrptionState;
 import com.myservers.backend.users.classes.GeneralResponse;
+import com.myservers.backend.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.thymeleaf.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +30,25 @@ public class UserService {
 
     @Autowired
     private com.myservers.backend.users.services.BalanceChangeHistoryService balanceChangeHistoryService;
+
+    @Autowired
+    private EmailService emailService;
     public List<User> getAllUsers(){
         return userRepository.findByState(true);
     }
 
-    public GeneralResponse addUser(String mail, String passwd, int phone, float balances, Role roles, boolean mfaEnabled){
+    public GeneralResponse addUser(String firstname,String lastname,String mail, String passwd, int phone, float balances, Role roles, boolean mfaEnabled){
 
         try{
+            // Generate random password if not provided
+            if (passwd == null || passwd.trim().isEmpty()) {
+                passwd = generateRandomPassword();
+            }
+            System.out.println("Generated Password: " + passwd); // For debugging; remove in production
+
             User user = User.builder()
+                    .firstname(firstname)
+                    .lastname(lastname)
                     .email(mail)
                     .password(passwordEncoder.encode(passwd))
                     .telephone(phone)
@@ -67,6 +80,29 @@ public class UserService {
                     // Log the error but don't fail the user creation
                     System.err.println("Error creating balance history for new user: " + e.getMessage());
                 }
+            }
+
+            // Send HTML email to user with created password
+            try {
+                Context context = new Context();
+                context.setVariable("email", mail);
+                context.setVariable("password", passwd);
+                context.setVariable("name", "User"); // You might want to extract name from email or add name field
+                context.setVariable("subject", "Your Account Has Been Created");
+                context.setVariable("loginUrl", "https://your-app-url.com/login"); // Replace with actual login URL
+
+                // Set greeting based on time
+                java.time.LocalDateTime dateTime = java.time.LocalDateTime.now()
+                    .atZone(java.time.ZoneId.of("Europe/Paris")).toLocalDateTime();
+                if (dateTime.getHour() < 12) {
+                    context.setVariable("greetings", "Bonjour");
+                } else {
+                    context.setVariable("greetings", "Bonsoir");
+                }
+
+                emailService.sendHtmlEmail(mail, "Your Account Has Been Created", "user-account-creation-email", context);
+            } catch (Exception e) {
+                System.err.println("Error sending email to new user: " + e.getMessage());
             }
 
             return GeneralResponse.builder()
@@ -338,5 +374,21 @@ public List<Integer> getCumulativeUserCountByMonth() {
      */
     public List<Double> getBalanceChangesByYear(int startYear, int endYear) {
         return balanceChangeHistoryService.getBalanceChangesByYear(startYear, endYear);
+    }
+
+    /**
+     * Generate a random password for new users
+     * @return randomly generated password
+     */
+    private String generateRandomPassword() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        StringBuilder password = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+
+        for (int i = 0; i < 12; i++) {
+            password.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        return password.toString();
     }
 }

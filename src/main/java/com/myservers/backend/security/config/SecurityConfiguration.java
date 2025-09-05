@@ -36,9 +36,9 @@ private final AuthenticationProvider authenticationProvider;
                         .requestMatchers("api/v1/applications/icons/**").permitAll()
                         .requestMatchers("api/v1/applications/upload-icon").hasAuthority("ADMIN")
                         .requestMatchers("api/v1/applications/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers("api/v1/applications/**").hasAuthority("ADMIN")
                         .requestMatchers("api/v1/applications/icons/**").permitAll()
                         .requestMatchers("api/v1/applications/active").hasAnyAuthority("ADMIN","USER")
+                         .requestMatchers("api/v1/applications/**").hasAuthority("ADMIN")
 
                   .requestMatchers("api/v1/demo/**").hasAuthority("ADMIN")
                         .requestMatchers("api/v1/servers/basic/**").hasAnyAuthority("ADMIN","USER")
