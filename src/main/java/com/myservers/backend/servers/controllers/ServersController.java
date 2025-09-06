@@ -181,7 +181,7 @@ public class ServersController {
         code.setState(CodeState.REQUESTED);
         codeRepository.save(code);
         try {
-            this.sendCodeBuyerVerificationEmail("Nizar Essid", "essid.nizar.123@gmail.com", "Validation d'achat d'un code " + server.getName_serv(), s.getVerificationCode(), server.getName_serv(),code.getSubscriptionDuration()+" mois");
+            this.sendCodeBuyerVerificationEmail(user.getFirstname()+" "+user.getLastname(), user.getEmail(), "Validation d'achat d'un code " + server.getName_serv(), s.getVerificationCode(), server.getName_serv(),code.getSubscriptionDuration()+" mois");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
