@@ -4,6 +4,8 @@ package com.myservers.backend.users.UserControllers;
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.myservers.backend.security.auth.entities.Role;
 import com.myservers.backend.security.auth.entities.User;
+import com.myservers.backend.security.auth.services.AuthenticationService;
+import com.myservers.backend.security.config.JwtService;
 import com.myservers.backend.users.UserService.UserService;
 import com.myservers.backend.users.classes.GeneralResponse;
 import com.myservers.backend.users.classes.UserResponse;
@@ -29,6 +31,8 @@ public class UserController {
     UserService userService;
   @Autowired
   private DtoService dtoService;
+    @Autowired
+    private JwtService authService;
     @CrossOrigin(origins = "*", exposedHeaders = "**")
     @PostMapping("/get_users")
     public GeneralResponse getUsers(@RequestBody Map<String,Object> RequestBodey){
@@ -431,6 +435,60 @@ public class UserController {
         "status", 400,
         "result", "Error: " + e.getMessage()
       ));
+    }
+  }
+
+  @CrossOrigin(origins = "*", exposedHeaders = "**")
+  @PostMapping("/changeUserPassword")
+  public GeneralResponse changeUserPassword(@RequestBody Map<String, Object> requestBody) {
+    try {
+      String currentPassword = (String) requestBody.get("currentPassword");
+      String newPassword = (String) requestBody.get("newPassword");
+
+      if (currentPassword == null || newPassword == null ||
+          currentPassword.trim().isEmpty() || newPassword.trim().isEmpty()) {
+        return GeneralResponse.builder()
+                .status(400L)
+                .result("Missing or empty parameters")
+                .build();
+      }
+
+      // Get authenticated user from security context
+      User user = authService.getUser();
+      if (user == null) {
+        return GeneralResponse.builder()
+                .status(401L)
+                .result("User not authenticated")
+                .build();
+      }
+
+      // Verify current password
+      boolean isCurrentPasswordValid = userService.verifyPassword(user, currentPassword);
+      if (!isCurrentPasswordValid) {
+        return GeneralResponse.builder()
+                .status(401L)
+                .result("Current password is incorrect")
+                .build();
+      }
+
+      // Update password
+      int updated = userService.updatePasswd(newPassword, user.getId());
+      if (updated > 0) {
+        return GeneralResponse.builder()
+                .status(200L)
+                .result("Password changed successfully")
+                .build();
+      } else {
+        return GeneralResponse.builder()
+                .status(500L)
+                .result("Failed to update password")
+                .build();
+      }
+    } catch (Exception e) {
+      return GeneralResponse.builder()
+              .status(500L)
+              .result("Error changing password: " + e.getMessage())
+              .build();
     }
   }
 }

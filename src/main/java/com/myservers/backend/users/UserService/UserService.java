@@ -4,6 +4,7 @@ import com.myservers.backend.security.auth.entities.Role;
 import com.myservers.backend.security.auth.entities.User;
 import com.myservers.backend.security.auth.repositories.UserRepository;
 import com.myservers.backend.security.auth.tfa.TwoFactorAuthenticationService;
+import com.myservers.backend.security.config.JwtService;
 import com.myservers.backend.servers.entities.Subscription;
 import com.myservers.backend.servers.entities.SubscrptionState;
 import com.myservers.backend.users.classes.GeneralResponse;
@@ -27,6 +28,9 @@ public class UserService {
     UserRepository userRepository;
     private final TwoFactorAuthenticationService tfaService;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private com.myservers.backend.users.services.BalanceChangeHistoryService balanceChangeHistoryService;
@@ -390,5 +394,30 @@ public List<Integer> getCumulativeUserCountByMonth() {
         }
 
         return password.toString();
+    }
+
+    /**
+     * Verify if the provided password matches the user's current password
+     * @param user the user entity
+     * @param rawPassword the raw password to verify
+     * @return true if password matches, false otherwise
+     */
+    public boolean verifyPassword(User user, String rawPassword) {
+        return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
+
+    /**
+     * Extract user ID from JWT token
+     * @param token the JWT token
+     * @return user ID if token is valid, null otherwise
+     */
+    public Integer getUserIdFromToken(String token) {
+        try {
+            String email = jwtService.extractUserEmail(token);
+            User user = userRepository.findByEmail(email).orElse(null);
+            return user != null ? user.getId() : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
