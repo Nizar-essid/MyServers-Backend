@@ -81,7 +81,7 @@ public ResponseEntity test() throws IOException {
     @CrossOrigin(origins = "*" , exposedHeaders = "**")
     @GetMapping(value="/applications/icons/{filename:.+}" , consumes = MediaType.ALL_VALUE, produces = MediaType.IMAGE_JPEG_VALUE)
     public org.springframework.core.io.Resource getApplicationIcon(@PathVariable String filename) throws IOException {
-        Path iconPath = Paths.get("uploads/applications/icons", filename);
+        Path iconPath = Paths.get(env.getProperty("webApplication.imagesPath"),"uploads/applications/icons", filename);
         return new UrlResource(iconPath.toUri());
     }
 }

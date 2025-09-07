@@ -27,7 +27,7 @@ public class Application {
     @Column(nullable = false)
     private String icon;
 
-    @Column(nullable = false)
+    @Column(nullable = false,length = 550)
     private String downloadUrl;
 
     @Enumerated(EnumType.STRING)

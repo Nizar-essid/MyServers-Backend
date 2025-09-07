@@ -1,5 +1,6 @@
 package com.myservers.backend.applications.services;
 
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -12,9 +13,10 @@ import java.util.UUID;
 @Service
 public class FileUploadService {
 
+  private Environment env;
     private static final String UPLOAD_DIR = "uploads/applications/icons/";
 
-    public String uploadImage(MultipartFile file) throws IOException {
+    public String uploadImage(MultipartFile file,String uploadFolder) throws IOException {
         // Validation du fichier
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Le fichier est vide");
@@ -32,7 +34,7 @@ public class FileUploadService {
         }
 
         // Créer le répertoire s'il n'existe pas
-        Path uploadPath = Paths.get(UPLOAD_DIR);
+        Path uploadPath = Paths.get(uploadFolder,UPLOAD_DIR);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -50,10 +52,10 @@ public class FileUploadService {
         return filename;
     }
 
-    public void deleteImage(String imagePath) {
+    public void deleteImage(String imagePath,String uploadFolder) {
         if (imagePath != null && imagePath.startsWith("/api/v1/applications/icons/")) {
             String filename = imagePath.substring("/api/v1/applications/icons/".length());
-            Path filePath = Paths.get(UPLOAD_DIR, filename);
+            Path filePath = Paths.get(uploadFolder,UPLOAD_DIR, filename);
             try {
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {

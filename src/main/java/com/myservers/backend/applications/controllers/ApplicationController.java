@@ -4,6 +4,7 @@ import com.myservers.backend.applications.entities.Application;
 import com.myservers.backend.applications.services.ApplicationService;
 import com.myservers.backend.applications.services.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,8 @@ public class ApplicationController {
 
     @Autowired
     private FileUploadService fileUploadService;
-
+@Autowired
+private Environment env;
     @GetMapping
     public ResponseEntity<List<Application>> getAllApplications() {
         List<Application> applications = applicationService.getAllActiveApplications();
@@ -165,7 +167,7 @@ public class ApplicationController {
         System.out.println("File size: " + file.getSize());
 
         try {
-            String filename = fileUploadService.uploadImage(file);
+            String filename = fileUploadService.uploadImage(file,env.getProperty("webApplication.imagesPath"));
             Map<String, String> response = new HashMap<>();
             response.put("imagePath", filename);
             response.put("message", "Image uploadée avec succès");
@@ -182,7 +184,7 @@ public class ApplicationController {
     @GetMapping("/icons/{filename:.+}")
     public ResponseEntity<Resource> serveIcon(@PathVariable String filename) {
         try {
-            Path filePath = Paths.get("uploads/applications/icons/").resolve(filename).normalize();
+            Path filePath = Paths.get(env.getProperty("webApplication.imagesPath"),"uploads/applications/icons/").resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
