@@ -434,6 +434,7 @@ if(user.getBalance()<payable)
                             .checksum(s.getRelatedCode().getCode_value())
                             .duration(s.getRelatedCode().getSubscriptionDuration())
                             .dateOfPurchase(s.getDateLatestUpdate())
+                      .purchase_state(s.getState())
                             .build();
                 } catch (Exception e) {
                     throw new RuntimeException(e);

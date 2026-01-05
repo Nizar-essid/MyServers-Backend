@@ -94,7 +94,8 @@ public class SubscriptionService {
     }
 
     public List<Subscription> findByPurchaser_IdAndState(Integer id) {
-        return subscriptionRepository.findByPurchaser_IdAndState(id, SubscrptionState.COMPLETED);
+        return subscriptionRepository.findByPurchaser_IdAndStateIn(id, List.of(SubscrptionState.COMPLETED,SubscrptionState.CANCELED,SubscrptionState.INPROCESS));
+
 
     }
 
@@ -301,6 +302,70 @@ private Map<YearMonth, Double> ensureMonthsDouble(Map<YearMonth, Double> objects
         }
 
         return result;
+    }
+
+    /**
+     * Get cumulative profits by month (profit = price - cost)
+     */
+    public List<Double> getCumulativeProfitsSumByMonth() {
+        List<Double> result = new ArrayList<>();
+        LocalDate now = LocalDate.now();
+        int year = now.getYear();
+
+        for (int month = 1; month <= now.getMonthValue(); month++) {
+            // Get the last day of the month
+            LocalDate endOfMonth = LocalDate.of(year, month, YearMonth.of(year, month).lengthOfMonth());
+            Date endDate = Date.from(endOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            List<Subscription> subscriptions = subscriptionRepository.findByStateAndDateLatestUpdateLessThanEqual(SubscrptionState.COMPLETED, endDate);
+            double profitSum = subscriptions.stream()
+                    .mapToDouble(subscription -> {
+                        if (subscription.getRelatedCode() != null) {
+                            double price = subscription.getRelatedCode().getPrice() != null
+                                ? subscription.getRelatedCode().getPrice().doubleValue() : 0.0;
+                            double cost = subscription.getRelatedCode().getCost() != null
+                                ? subscription.getRelatedCode().getCost().doubleValue() : 0.0;
+                            return price - cost;
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+            result.add(profitSum);
+        }
+
+        return result;
+    }
+
+    /**
+     * Get profits per year (profit = price - cost)
+     */
+    public List<Double> getProfitsPerYear(int startYear, int endYear) {
+        List<Subscription> subscriptions = subscriptionRepository.findByState(SubscrptionState.COMPLETED);
+
+        // Group subscriptions by year and calculate profit (price - cost)
+        Map<Year, Double> profitsPerYear = subscriptions.stream()
+                .filter(sub -> sub.getRelatedCode() != null)
+                .collect(Collectors.groupingBy(
+                        object -> Year.from(object.getDateLatestUpdate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()),
+                        Collectors.summingDouble(subscription -> {
+                            double price = subscription.getRelatedCode().getPrice() != null
+                                ? subscription.getRelatedCode().getPrice().doubleValue() : 0.0;
+                            double cost = subscription.getRelatedCode().getCost() != null
+                                ? subscription.getRelatedCode().getCost().doubleValue() : 0.0;
+                            return price - cost;
+                        })
+                ));
+
+        // Ensure all years are included in the result (from startYear to endYear)
+        Map<Year, Double> completeProfitsPerYear = ensureYearsDouble(profitsPerYear, startYear, endYear);
+
+        // Convert to a list
+        List<Double> profitsCounts = new ArrayList<>();
+        for (int year = startYear; year <= endYear; year++) {
+            profitsCounts.add(completeProfitsPerYear.get(Year.of(year)).doubleValue());
+        }
+
+        return profitsCounts;
     }
 
     /**

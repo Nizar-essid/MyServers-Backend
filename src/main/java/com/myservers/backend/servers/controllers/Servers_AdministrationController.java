@@ -83,11 +83,11 @@ private VerificationCodeService verificationCodeService;
                             .added_by((Admin) user)
                             .originServer(finalServer)
                             .price((float) code.getPrice())
+                            .cost(code.getCost() != null ? (float) code.getCost() : null)
                             .subscriptionDuration((int) code.getSubscription_duration())
                             .code_value(EncryptionUtil.encrypt1(code.getValue(), Objects.requireNonNull(env.getProperty("security.AESKEY"))))
                             .state(CodeState.AVAILABLE)
                             .dateCreation(new Date())
-                            .validUntil((Date)code.getValidUntil())
                             .build());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -157,9 +157,9 @@ public GeneralResponse addCode(@RequestBody AddCodeRequest bodyRequest ) throws 
                     .added_by((Admin) user)
                     .originServer(server)
                     .price((float) bodyRequest.getCode_details().getPrice())
+                    .cost(bodyRequest.getCode_details().getCost() != null ? (float) bodyRequest.getCode_details().getCost() : null)
                     .subscriptionDuration((int) bodyRequest.getCode_details().getSubscription_duration())
                     .dateCreation(new Date())
-                    .validUntil((Date)bodyRequest.getCode_details().getValidUntil())
                     .build();
 
         var savedCode=codeService.saveCode(code);
@@ -194,9 +194,9 @@ public GeneralResponse addCode(@RequestBody AddCodeRequest bodyRequest ) throws 
                         .added_by((Admin) user)
                         .originServer(server)
                         .price((float) codeDetails.getPrice())
+                        .cost(codeDetails.getCost() != null ? (float) codeDetails.getCost() : null)
                         .subscriptionDuration((int) codeDetails.getSubscription_duration())
                         .dateCreation(new Date())
-                        .validUntil((Date) codeDetails.getValidUntil())
                         .build();
 
                 var savedCode = codeService.saveCode(code);
@@ -441,7 +441,6 @@ var id_server=(Integer)requestBody.get("id");
                                 .code_value(verificationCodeService.generateTokenForCodeValue(generateTwoDigitNumber() +code.getCode_value()+ generateTwoDigitNumber()))
                         .price(code.getPrice())
                         .duration(code.getSubscriptionDuration())
-                        .valid_until(code.getValidUntil())
                         .build());
             });
             serverResponse.setCodes(codes);

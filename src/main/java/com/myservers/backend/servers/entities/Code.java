@@ -25,13 +25,13 @@ public class Code {
     private Date lastest_Update;
     @Column(name = "purchased_on", nullable = true)
     private Date purchasedOn;
-    @Column(name = "valid_until", nullable = false)
-    private Date validUntil;
     @Enumerated(EnumType.STRING)
     private CodeState state;
     @Column(name = "subscription_duration", nullable = false)
     private Integer subscriptionDuration;
     private Float price;
+    @Column(name = "cost", nullable = true)
+    private Float cost;
     @ManyToOne
     @JoinColumn(name = "origin_server_id")
     private Server originServer;

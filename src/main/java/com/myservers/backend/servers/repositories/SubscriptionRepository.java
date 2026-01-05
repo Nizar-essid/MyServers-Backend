@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,9 @@ public interface SubscriptionRepository extends CrudRepository<Subscription, Lon
 
     List<Subscription> findByPurchaser_IdAndState(Integer id, SubscrptionState state);
 
-    List<Subscription> findByState(SubscrptionState state);
+  List<Subscription> findByPurchaser_IdAndStateIn(Integer id, Collection<SubscrptionState> states);
+
+  List<Subscription> findByState(SubscrptionState state);
 
     long countByStateAndDateLatestUpdateBefore(SubscrptionState state, Date date_latest_update);
 

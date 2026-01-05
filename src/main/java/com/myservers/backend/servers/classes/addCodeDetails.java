@@ -13,5 +13,6 @@ public class addCodeDetails {
     private Integer id;
     public  String value;
     public long price;
+    public Long cost;
     public long subscription_duration;
-    private Date validUntil;}
+    }

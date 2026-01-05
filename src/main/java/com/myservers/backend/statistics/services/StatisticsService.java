@@ -39,6 +39,7 @@ public class StatisticsService {
             List<Double> purchaseData = getCombinedCumulativePurchasesByMonth();
             List<Integer> serverData = codesService.getCumulativeCodesCountByMonth();
             List<Double> balanceData = userService.getBalanceChangesByMonth();
+            List<Double> profitData = subscriptionService.getCumulativeProfitsSumByMonth();
             return GetStatisticsResponse.builder()
                     .data(
                             Statistics.builder()
@@ -47,6 +48,7 @@ public class StatisticsService {
                                     .purchaseData(purchaseData)
                                     .serverData(serverData)
                                     .balanceData(balanceData)
+                                    .profitData(profitData)
                                     .build())
                     .status(200)
                     .build();
@@ -65,6 +67,7 @@ public class StatisticsService {
             List<Double> purchaseData = getCombinedPurchasesByYear(startYear, endYear);
             List<Integer> serverData = codesService.getcodesCountPerYear(startYear, endYear);
             List<Double> balanceData = userService.getBalanceChangesByYear(startYear, endYear);
+            List<Double> profitData = subscriptionService.getProfitsPerYear(startYear, endYear);
 
             return GetStatisticsResponse.builder()
                     .data(
@@ -74,6 +77,7 @@ public class StatisticsService {
                                     .purchaseData(purchaseData)
                                     .serverData(serverData)
                                     .balanceData(balanceData)
+                                    .profitData(profitData)
                                     .build())
                     .status(200)
                     .build();

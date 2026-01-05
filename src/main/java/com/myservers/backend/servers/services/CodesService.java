@@ -47,8 +47,8 @@ public class CodesService {
         return codeRepository.findAll();
     }
 
-    public Optional<Code> findByIdAndStateAndValidUntilGreaterThanEqual(Long codeId){
-    return codeRepository.findByIdAndStateAndValidUntilGreaterThanEqual( codeId,CodeState.REQUESTED, new Date());
+    public Optional<Code> findByIdAndState(Long codeId){
+    return codeRepository.findByIdAndState( codeId,CodeState.REQUESTED);
 
     }
     public List<Code> getCodesByServerID(Integer serverID) {
@@ -68,8 +68,8 @@ public class CodesService {
                                .latest_update(code.getLastest_Update())
                                .state(code.getState())
                                .duration(code.getSubscriptionDuration())
-                               .valid_until(code.getValidUntil())
                                .price(code.getPrice())
+                               .cost(code.getCost())
                                .purchased_on(code.getPurchasedOn())
                                .build());
            } catch (Exception e) {
@@ -91,8 +91,8 @@ public class CodesService {
                                .latest_update(code.getLastest_Update())
                                .state(code.getState())
                                .duration(code.getSubscriptionDuration())
-                               .valid_until(code.getValidUntil())
                                .price(code.getPrice())
+                               .cost(code.getCost())
                                .purchased_on(code.getPurchasedOn())
                                .build());
            } catch (Exception e) {
@@ -114,8 +114,8 @@ public class CodesService {
                         .latest_update(code.get().getLastest_Update())
                         .state(code.get().getState())
                         .duration(code.get().getSubscriptionDuration())
-                        .valid_until(code.get().getValidUntil())
                         .price(code.get().getPrice())
+                        .cost(code.get().getCost())
                         .purchased_on(code.get().getPurchasedOn())
                         .build();
             } catch (Exception e) {
@@ -167,7 +167,7 @@ catch (Exception e){System.out.println(e.getMessage());}
     public GeneralResponse updateCode(CodeDetails codeDetails, User user) {
 
         try{ var code=codeRepository.getReferenceById(Long.valueOf(codeDetails.getId()));
-System.out.println("Updating code with ID: " + codeDetails.getId()+ ", Value: " + codeDetails.getValue() + ", Price: " + codeDetails.getPrice() + ", Duration: " + codeDetails.getSubscription_duration() + ", Valid Until: " + codeDetails.getValidUntil());
+System.out.println("Updating code with ID: " + codeDetails.getId()+ ", Value: " + codeDetails.getValue() + ", Price: " + codeDetails.getPrice() + ", Duration: " + codeDetails.getSubscription_duration() + ", Valid Until: " );
         System.out.println("Current state: "+ !codeDetails.getValue().isBlank()+"&& "+ (codeDetails.getValue().length()>4));
             if(!codeDetails.getValue().isBlank()&&codeDetails.getValue().length()>4){
               System.out.println("Encrypting code value: " );
@@ -176,8 +176,8 @@ System.out.println("Updating code with ID: " + codeDetails.getId()+ ", Value: " 
 
             code.setState(CodeState.AVAILABLE);
             code.setPrice((float) codeDetails.getPrice());
+            code.setCost(codeDetails.getCost() != null ? (float) codeDetails.getCost() : null);
             code.setSubscriptionDuration((int) codeDetails.getSubscription_duration());
-code.setValidUntil((Date)codeDetails.getValidUntil());
             saveCode(code);
             return GeneralResponse.builder()
                     .result("success")

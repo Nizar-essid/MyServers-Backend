@@ -20,4 +20,5 @@ public class CodeBasicResponse {
     private CodeState state;
     private Integer duration;
     private Float price;
+    private Float cost;
 }

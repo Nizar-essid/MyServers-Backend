@@ -27,7 +27,7 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 
     List<Code> findByOriginServer_IdAndState(Long id, CodeState state);
 
-    Optional<Code> findByIdAndStateAndValidUntilGreaterThanEqual(Long id, CodeState state, Date validUntil);
+    Optional<Code> findByIdAndState(Long id, CodeState state);
 
     @Transactional
     @Modifying

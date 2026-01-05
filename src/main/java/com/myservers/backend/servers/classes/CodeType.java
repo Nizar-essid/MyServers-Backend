@@ -1,5 +1,6 @@
 package com.myservers.backend.servers.classes;
 
+import com.myservers.backend.servers.entities.SubscrptionState;
 import lombok.*;
 
 import java.util.Date;
@@ -23,4 +24,5 @@ public class CodeType {
     private Date dateOfPurchase;
     private Integer id;
     private Date valid_until;
+    private SubscrptionState purchase_state;
 }

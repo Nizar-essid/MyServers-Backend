@@ -14,5 +14,5 @@ private Integer id;
     private String value;
     private float subscription_duration;
     private float price;
-    private Date validUntil;
+    private Float cost;
 }

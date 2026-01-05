@@ -12,4 +12,5 @@ public class Statistics {
     private List<Double>  purchaseData;
     private List<Integer> serverData;
     private List<Double>  balanceData;
+    private List<Double>  profitData;
 }
