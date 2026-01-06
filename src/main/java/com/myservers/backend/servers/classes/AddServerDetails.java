@@ -10,5 +10,6 @@ public class AddServerDetails {
     private Integer id;
     public String name_serv;
     public String logo;
+    private Long categoryId;
 }
 

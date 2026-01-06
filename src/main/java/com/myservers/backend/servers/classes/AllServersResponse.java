@@ -25,6 +25,8 @@ public class AllServersResponse {
     private Double price;
     private Integer duration_months;
     private Boolean active;
+    private Long categoryId;
+    private String categoryName;
 
 
 }

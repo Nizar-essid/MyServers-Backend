@@ -38,6 +38,10 @@ public class Server {
     private Integer duration_months;
     private Boolean active;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     public Server(Admin added_by, String name_serv, Date date_creation, boolean state, String logo, Admin updated_by) {
         this.added_by = added_by;
         this.name_serv = name_serv;

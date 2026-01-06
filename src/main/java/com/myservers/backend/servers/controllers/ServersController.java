@@ -90,6 +90,8 @@ public class ServersController {
                     .duration_months(server.getDuration_months())
                     .active(server.getActive())
                     .state(server.isState())
+                    .categoryId(server.getCategory() != null ? server.getCategory().getId() : null)
+                    .categoryName(server.getCategory() != null ? server.getCategory().getName() : null)
                     .build();
             var codes = new ArrayList<CodeType>();
 

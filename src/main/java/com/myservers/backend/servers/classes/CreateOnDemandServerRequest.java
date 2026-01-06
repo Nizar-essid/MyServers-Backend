@@ -30,4 +30,7 @@ public class CreateOnDemandServerRequest {
 
     @JsonProperty("logo")
     public String logo;
+
+    @JsonProperty("categoryId")
+    public Long categoryId;
 }

@@ -74,6 +74,12 @@ private VerificationCodeService verificationCodeService;
                     .date_creation(new Date())
                     .state(true)
                     .build();
+            
+            // Handle category assignment in ServersService
+            if (bodyRequest.getServer_details().getCategoryId() != null) {
+                serversService.setServerCategory(server, bodyRequest.getServer_details().getCategoryId());
+            }
+            
             server = serversService.saveServer(server);
 
             Server finalServer = server;
@@ -126,6 +132,12 @@ private VerificationCodeService verificationCodeService;
                     .date_creation(new Date())
                     .state(true)
                     .build();
+            
+            // Handle category assignment
+            if (bodyRequest.getCategoryId() != null) {
+                serversService.setServerCategory(server, bodyRequest.getCategoryId());
+            }
+            
             server = serversService.saveServer(server);
 
             return GeneralResponse.builder()
@@ -431,6 +443,8 @@ var id_server=(Integer)requestBody.get("id");
                     .price(server.getPrice())
                     .duration_months(server.getDuration_months())
                     .active(server.getActive())
+                    .categoryId(server.getCategory() != null ? server.getCategory().getId() : null)
+                    .categoryName(server.getCategory() != null ? server.getCategory().getName() : null)
                     .build();
             var codes = new ArrayList<CodeType>();
 

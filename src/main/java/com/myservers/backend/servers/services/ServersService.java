@@ -28,10 +28,23 @@ public class ServersService {
     private CodeRepository codeRepository;
     @Autowired
     private CodesService codeService;
+    @Autowired
+    private CategoryService categoryService;
 
     public Server saveServer(Server p)
     {
         return serverRepository.save(p);
+    }
+    
+    public void setServerCategory(Server server, Long categoryId) {
+        if (categoryId != null) {
+            if (!categoryService.isLeafCategory(categoryId)) {
+                throw new ApiRequestException("Cannot assign server to a category that has children. Only leaf categories can contain servers.", HttpStatus.BAD_REQUEST);
+            }
+            server.setCategory(categoryService.getCategoryByIdEntity(categoryId));
+        } else {
+            server.setCategory(null);
+        }
     }
     public Iterable<Server> getServer() {
         return serverRepository.findByState(true);
@@ -81,10 +94,25 @@ try{
       try{  var server=serverRepository.findById(Long.valueOf(serverDetails.getId())).orElseThrow();
         if(server!=null){
             server.setLogo(serverDetails.getLogo());
-        server.setName_serv(serverDetails.getName_serv());
-        server.setUpdated_by(user);
-        server.setState(true);
-        serverRepository.save(server);
+            server.setName_serv(serverDetails.getName_serv());
+            server.setUpdated_by(user);
+            server.setState(true);
+            
+            // Handle category assignment (only leaf categories)
+            if (serverDetails.getCategoryId() != null) {
+                if (!categoryService.isLeafCategory(serverDetails.getCategoryId())) {
+                    return GeneralResponse.builder()
+                            .status(400L)
+                            .result("Cannot assign server to a category that has children. Only leaf categories can contain servers.")
+                            .trueFalse(false)
+                            .build();
+                }
+                server.setCategory(categoryService.getCategoryByIdEntity(serverDetails.getCategoryId()));
+            } else {
+                server.setCategory(null);
+            }
+            
+            serverRepository.save(server);
         return GeneralResponse.builder()
                 .status(200L)
                 .result("success")
@@ -136,6 +164,20 @@ try{
             server.setActive(serverDetails.getActive());
             server.setLogo(serverDetails.getLogo());
             server.setUpdated_by(user);
+            
+            // Handle category assignment (only leaf categories)
+            if (serverDetails.getCategoryId() != null) {
+                if (!categoryService.isLeafCategory(serverDetails.getCategoryId())) {
+                    return GeneralResponse.builder()
+                            .status(400L)
+                            .result("Cannot assign server to a category that has children. Only leaf categories can contain servers.")
+                            .trueFalse(false)
+                            .build();
+                }
+                server.setCategory(categoryService.getCategoryByIdEntity(serverDetails.getCategoryId()));
+            } else {
+                server.setCategory(null);
+            }
             
             serverRepository.save(server);
             
