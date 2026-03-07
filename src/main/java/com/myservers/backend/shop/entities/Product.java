@@ -1,6 +1,7 @@
 package com.myservers.backend.shop.entities;
 
 import com.myservers.backend.security.auth.entities.Admin;
+import com.myservers.backend.servers.entities.Category;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,10 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(nullable = false)
     private String name;

@@ -53,6 +53,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
@@ -152,6 +156,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+<!--					<jvmArguments>&#45;&#45;enable-preview</jvmArguments>-->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -160,7 +165,7 @@
 				<configuration>
 					<source>22</source>
 					<target>22</target>
-					<compilerArgs>--enable-preview</compilerArgs>
+<!--					<compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
 				</configuration>
 			</plugin>
 		</plugins>

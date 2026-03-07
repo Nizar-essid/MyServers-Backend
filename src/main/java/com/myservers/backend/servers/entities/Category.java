@@ -20,6 +20,10 @@ public class Category {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, length = 20)
+    private CategoryType type = CategoryType.SERVER;
+
     @Column(name = "name", nullable = false)
     private String name;
 

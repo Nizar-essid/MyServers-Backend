@@ -16,5 +16,5 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
 
     List<Server> findByState(boolean state);
 
-
+    long countByCategory_Id(Long categoryId);
 }

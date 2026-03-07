@@ -87,7 +87,7 @@ public class QuoteRequestService {
                 .product(productService.getProductById(quoteRequest.getProduct().getId()))
                 .userId(quoteRequest.getUser() != null ? Long.valueOf(quoteRequest.getUser().getId()): null)
                 .userName(quoteRequest.getUser() != null ?
-                  STR."\{quoteRequest.getUser().getFirstname()} \{quoteRequest.getUser().getLastname()}" : null)
+                  quoteRequest.getUser().getFirstname()+quoteRequest.getUser().getLastname() : null)
                 .contactName(quoteRequest.getContactName())
                 .contactEmail(quoteRequest.getContactEmail())
                 .contactPhone(quoteRequest.getContactPhone())

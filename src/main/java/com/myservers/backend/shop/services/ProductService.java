@@ -1,6 +1,9 @@
 package com.myservers.backend.shop.services;
 
 import com.myservers.backend.security.auth.entities.Admin;
+import com.myservers.backend.servers.entities.Category;
+import com.myservers.backend.servers.entities.CategoryType;
+import com.myservers.backend.servers.services.CategoryService;
 import com.myservers.backend.shop.classes.ProductRequest;
 import com.myservers.backend.shop.classes.ProductResponse;
 import com.myservers.backend.shop.entities.Product;
@@ -17,6 +20,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryService categoryService;
 
     public List<ProductResponse> getAllActiveProducts() {
         return productRepository.findByIsActiveTrueAndIsAvailableTrueOrderByDateCreationDesc()
@@ -40,7 +46,9 @@ public class ProductService {
     }
 
     public ProductResponse createProduct(ProductRequest request, Admin createdBy) {
+        Category category = resolveShopCategory(request.getCategoryId());
         Product product = Product.builder()
+                .category(category)
                 .name(request.getName())
                 .description(request.getDescription())
                 .price(request.getPrice())
@@ -59,6 +67,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+        product.setCategory(resolveShopCategory(request.getCategoryId()));
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
@@ -76,6 +85,19 @@ public class ProductService {
         return convertToResponse(saved);
     }
 
+    /** Resolves category for product: must be SHOP type and leaf. Returns null if categoryId is null. */
+    private Category resolveShopCategory(Long categoryId) {
+        if (categoryId == null) return null;
+        Category cat = categoryService.getCategoryByIdEntity(categoryId);
+        if (cat.getType() != CategoryType.SHOP) {
+            throw new IllegalArgumentException("Product category must be a shop category.");
+        }
+        if (!categoryService.isLeafCategory(categoryId)) {
+            throw new IllegalArgumentException("Only leaf shop categories can contain products.");
+        }
+        return cat;
+    }
+
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -86,6 +108,8 @@ public class ProductService {
     private ProductResponse convertToResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
+                .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())

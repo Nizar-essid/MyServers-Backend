@@ -5,6 +5,7 @@ import com.myservers.backend.security.auth.entities.User;
 import com.myservers.backend.servers.classes.CategoryRequest;
 import com.myservers.backend.servers.classes.CategoryResponse;
 import com.myservers.backend.servers.classes.GeneralResponse;
+import com.myservers.backend.servers.entities.CategoryType;
 import com.myservers.backend.servers.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,10 +24,20 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final JwtService jwtService;
 
-    @GetMapping
-    public GeneralResponse getAllCategories() {
+    private static CategoryType parseType(String type) {
+        if (type == null || type.isBlank()) return CategoryType.SERVER;
         try {
-            List<CategoryResponse> categories = categoryService.getAllCategories();
+            return CategoryType.valueOf(type.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return CategoryType.SERVER;
+        }
+    }
+
+    @GetMapping
+    public GeneralResponse getAllCategories(@RequestParam(required = false) String type) {
+        try {
+            CategoryType categoryType = parseType(type);
+            List<CategoryResponse> categories = categoryService.getAllCategories(categoryType);
             return GeneralResponse.builder()
                     .status(200L)
                     .result("Success")
@@ -41,9 +52,10 @@ public class CategoryController {
     }
 
     @GetMapping("/tree")
-    public GeneralResponse getCategoriesTree() {
+    public GeneralResponse getCategoriesTree(@RequestParam(required = false) String type) {
         try {
-            List<CategoryResponse> categories = categoryService.getCategoriesTree();
+            CategoryType categoryType = parseType(type);
+            List<CategoryResponse> categories = categoryService.getCategoriesTree(categoryType);
             return GeneralResponse.builder()
                     .status(200L)
                     .result("Success")
@@ -58,9 +70,10 @@ public class CategoryController {
     }
 
     @GetMapping("/roots")
-    public GeneralResponse getRootCategories() {
+    public GeneralResponse getRootCategories(@RequestParam(required = false) String type) {
         try {
-            List<CategoryResponse> categories = categoryService.getRootCategories();
+            CategoryType categoryType = parseType(type);
+            List<CategoryResponse> categories = categoryService.getRootCategories(categoryType);
             return GeneralResponse.builder()
                     .status(200L)
                     .result("Success")
@@ -94,9 +107,10 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/children")
-    public GeneralResponse getChildrenCategories(@PathVariable Long id) {
+    public GeneralResponse getChildrenCategories(@PathVariable Long id, @RequestParam(required = false) String type) {
         try {
-            List<CategoryResponse> categories = categoryService.getChildrenCategories(id);
+            CategoryType categoryType = parseType(type);
+            List<CategoryResponse> categories = categoryService.getChildrenCategories(id, categoryType);
             return GeneralResponse.builder()
                     .status(200L)
                     .result("Success")
@@ -167,9 +181,10 @@ public class CategoryController {
     }
 
     @GetMapping("/leaves")
-    public GeneralResponse getLeafCategories() {
+    public GeneralResponse getLeafCategories(@RequestParam(required = false) String type) {
         try {
-            List<CategoryResponse> categories = categoryService.getLeafCategories();
+            CategoryType categoryType = parseType(type);
+            List<CategoryResponse> categories = categoryService.getLeafCategories(categoryType);
             return GeneralResponse.builder()
                     .status(200L)
                     .result("Success")

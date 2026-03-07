@@ -111,7 +111,7 @@ var jwtToken=jwtService.generateToken(user);
     public AuthenticationResponse loginAdminWith2FA(AuthenticationRequest request) {
 //        System.out.println("Login");
         var user=adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(()-> new ApiRequestException("admin does not exist",HttpStatus.NOT_FOUND));
+                .orElseThrow(()-> new ApiRequestException("admin does not exist",HttpStatus.UNAUTHORIZED));
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         authenticationManager.authenticate((
                 new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword(), authorities)
@@ -137,6 +137,32 @@ if(user.isMfaEnabled()){
   public AuthenticationResponse loginAdminWith2FAUser(AuthenticationRequest request) {
 //        System.out.println("Login");
     var user=userRepository.findByEmail(request.getEmail())
+      .orElseThrow(()-> new ApiRequestException("user does not exist",HttpStatus.UNAUTHORIZED));
+    Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+    authenticationManager.authenticate((
+      new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword(), authorities)
+    ));
+    if(user.isMfaEnabled()){
+      return AuthenticationResponse.builder()
+        .token("")
+        .status(200)
+        .isMfaEnabled(true)
+        .build();
+    }
+
+    var jwtToken=jwtService.generateToken(user);
+//        System.out.println(jwtToken);
+
+    return AuthenticationResponse.builder()
+      .token(jwtToken)
+      .secretImageUri(tfaService.generateQrCodeImageUri(user.getSecret()))
+      .isMfaEnabled(false)
+      .status(200)
+      .build();
+  }
+  public AuthenticationResponse loginAdminWith2FAAdmin(AuthenticationRequest request) {
+//        System.out.println("Login");
+    var user=adminRepository.findByEmail(request.getEmail())
       .orElseThrow(()-> new ApiRequestException("user does not exist",HttpStatus.NOT_FOUND));
     Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
     authenticationManager.authenticate((

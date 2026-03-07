@@ -1,5 +1,6 @@
 package com.myservers.backend.servers.classes;
 
+import com.myservers.backend.servers.entities.CategoryType;
 import lombok.*;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.List;
 @Builder
 public class CategoryResponse {
     private Long id;
+    private CategoryType type;
     private String name;
     private String description;
     private Long parentId;

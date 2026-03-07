@@ -4,9 +4,10 @@ package com.myservers.backend.servers.services;
 import com.myservers.backend.exceptions.ApiRequestException;
 import com.myservers.backend.security.auth.entities.Admin;
 import com.myservers.backend.security.auth.entities.User;
-import com.myservers.backend.servers.classes.*;
-import com.myservers.backend.servers.entities.*;
+import com.myservers.backend.servers.classes.AddServerDetails;
+import com.myservers.backend.servers.classes.GeneralResponse;
 import com.myservers.backend.servers.classes.UpdateOnDemandServerRequest;
+import com.myservers.backend.servers.entities.*;
 import com.myservers.backend.servers.repositories.CodeRepository;
 import com.myservers.backend.servers.repositories.ServerRepository;
 import com.myservers.backend.users.classes.UserResponse;
@@ -38,10 +39,14 @@ public class ServersService {
     
     public void setServerCategory(Server server, Long categoryId) {
         if (categoryId != null) {
+            Category cat = categoryService.getCategoryByIdEntity(categoryId);
+            if (cat.getType() != CategoryType.SERVER) {
+                throw new ApiRequestException("Category must be a server category.", HttpStatus.BAD_REQUEST);
+            }
             if (!categoryService.isLeafCategory(categoryId)) {
                 throw new ApiRequestException("Cannot assign server to a category that has children. Only leaf categories can contain servers.", HttpStatus.BAD_REQUEST);
             }
-            server.setCategory(categoryService.getCategoryByIdEntity(categoryId));
+            server.setCategory(cat);
         } else {
             server.setCategory(null);
         }
@@ -98,8 +103,16 @@ try{
             server.setUpdated_by(user);
             server.setState(true);
             
-            // Handle category assignment (only leaf categories)
+            // Handle category assignment (only leaf server categories)
             if (serverDetails.getCategoryId() != null) {
+                Category cat = categoryService.getCategoryByIdEntity(serverDetails.getCategoryId());
+                if (cat.getType() != CategoryType.SERVER) {
+                    return GeneralResponse.builder()
+                            .status(400L)
+                            .result("Category must be a server category.")
+                            .trueFalse(false)
+                            .build();
+                }
                 if (!categoryService.isLeafCategory(serverDetails.getCategoryId())) {
                     return GeneralResponse.builder()
                             .status(400L)
@@ -107,7 +120,7 @@ try{
                             .trueFalse(false)
                             .build();
                 }
-                server.setCategory(categoryService.getCategoryByIdEntity(serverDetails.getCategoryId()));
+                server.setCategory(cat);
             } else {
                 server.setCategory(null);
             }
@@ -165,8 +178,16 @@ try{
             server.setLogo(serverDetails.getLogo());
             server.setUpdated_by(user);
             
-            // Handle category assignment (only leaf categories)
+            // Handle category assignment (only leaf server categories)
             if (serverDetails.getCategoryId() != null) {
+                Category cat = categoryService.getCategoryByIdEntity(serverDetails.getCategoryId());
+                if (cat.getType() != CategoryType.SERVER) {
+                    return GeneralResponse.builder()
+                            .status(400L)
+                            .result("Category must be a server category.")
+                            .trueFalse(false)
+                            .build();
+                }
                 if (!categoryService.isLeafCategory(serverDetails.getCategoryId())) {
                     return GeneralResponse.builder()
                             .status(400L)
@@ -174,7 +195,7 @@ try{
                             .trueFalse(false)
                             .build();
                 }
-                server.setCategory(categoryService.getCategoryByIdEntity(serverDetails.getCategoryId()));
+                server.setCategory(cat);
             } else {
                 server.setCategory(null);
             }
